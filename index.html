@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>To-Do App</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 850px;
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+      }
+
+      .input-box {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+      }
+
+      input {
+        flex: 1;
+        padding: 14px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+      }
+
+      button {
+        border: none;
+        padding: 12px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: white;
+        font-weight: bold;
+      }
+
+      .add-btn {
+        background: #2196f3;
+      }
+
+      .sections {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .box {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 12px;
+        min-height: 350px;
+      }
+
+      .box h2 {
+        margin-bottom: 15px;
+        text-align: center;
+        color: #333;
+      }
+
+      ul {
+        list-style: none;
+      }
+
+      li {
+        background: white;
+        margin-bottom: 12px;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .task {
+        font-size: 17px;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #222;
+      }
+
+      .time {
+        font-size: 12px;
+        color: gray;
+        margin-bottom: 10px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .complete {
+        background: #28a745;
+      }
+      .edit {
+        background: #ff9800;
+      }
+      .delete {
+        background: #e53935;
+      }
+
+      .done-task {
+        text-decoration: line-through;
+        color: gray;
+      }
+
+      @media (max-width: 768px) {
+        .sections {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>📝 My To-Do App</h1>
+
+      <div class="input-box">
+        <input type="text" id="taskInput" placeholder="Enter your task" />
+        <button class="add-btn" onclick="addTask()">Add Task</button>
+      </div>
+
+      <div class="sections">
+        <div class="box">
+          <h2>⏳ Pending Tasks</h2>
+          <ul id="pendingList"></ul>
+        </div>
+
+        <div class="box">
+          <h2>✅ Completed Tasks</h2>
+          <ul id="completedList"></ul>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function getTime() {
+        return new Date().toLocaleString();
+      }
+
+      function addTask() {
+        let input = document.getElementById("taskInput");
+        let text = input.value.trim();
+
+        if (text === "") {
+          alert("Please enter a task");
+          return;
+        }
+
+        createTask(text, getTime(), "pending");
+        input.value = "";
+      }
+
+      function createTask(text, time, type, completedTime = "") {
+        let li = document.createElement("li");
+
+        li.innerHTML = `
+    <div class="task ${type === "completed" ? "done-task" : ""}">${text}</div>
+    <div class="time">
+      Added: ${time}
+      ${completedTime ? "<br>Completed: " + completedTime : ""}
+    </div>
+
+    <div class="actions">
+      ${type === "pending" ? '<button class="complete" onclick="completeTask(this)">Complete</button>' : ""}
+      <button class="edit" onclick="editTask(this)">Edit</button>
+      <button class="delete" onclick="deleteTask(this)">Delete</button>
+    </div>
+  `;
+
+        if (type === "pending") {
+          document.getElementById("pendingList").appendChild(li);
+        } else {
+          document.getElementById("completedList").appendChild(li);
+        }
+      }
+
+      function completeTask(btn) {
+        let li = btn.parentElement.parentElement;
+        let taskText = li.querySelector(".task").innerText;
+        let addedTime = li
+          .querySelector(".time")
+          .innerHTML.split("<br>")[0]
+          .replace("Added: ", "");
+        let completedTime = getTime();
+
+        li.remove();
+
+        createTask(taskText, addedTime, "completed", completedTime);
+      }
+
+      function editTask(btn) {
+        let li = btn.parentElement.parentElement;
+        let task = li.querySelector(".task");
+
+        let updated = prompt("Edit your task:", task.innerText);
+
+        if (updated && updated.trim() !== "") {
+          task.innerText = updated;
+        }
+      }
+
+      function deleteTask(btn) {
+        btn.parentElement.parentElement.remove();
+      }
+    </script>
+  </body>
+</html>
